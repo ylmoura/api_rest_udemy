@@ -1,8 +1,10 @@
 from importlib import resources
 from flask_restful import Resource, reqparse
 from models.usuario import *
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required , get_jwt
 from werkzeug.security import safe_str_cmp
+from blacklist import BLACKLIST
+
 
 atributos = reqparse.RequestParser()
 atributos.add_argument('login', type=str, required=True, help="The field 'login' to register")
@@ -16,7 +18,7 @@ class User(Resource):
             return user.json()
         return {'message': 'User not found.'}, 404 # not found
 
-    
+    @jwt_required()
     def delete(self,user_id):
         #global hoteis # dizendo que a variavel hoteis já  existe para eu poder fazer referencia novamente  
         user = UserModel.find_user(user_id)
@@ -54,3 +56,10 @@ class UserLogin(Resource):
             token_de_acesso = create_access_token(identity=user.user_id)
             return {'acess_token': token_de_acesso}, 200 
         return {'message': 'The username or password is incorrect.'}, 401 # Unauthorized
+
+class UserLogout(Resource):
+    @jwt_required()
+    def post(self):
+        jwt_id = get_jwt()['jti']  # JWT Token Identifier
+        BLACKLIST.add(jwt_id)
+        return {'message': 'Logged out sucessfully!'}, 200

@@ -20,6 +20,7 @@ class Hotel(Resource):
             return hotel.json()
         return {'message': 'Hotel not found.'}, 404 # not found
 
+    @jwt_required()
     def post(self,hotel_id):
         if HotelModel.find_hotel(hotel_id):
             return {'message': "Hotel id '{}' already exists.".format(hotel_id)}, 400 # bad requests
@@ -31,7 +32,7 @@ class Hotel(Resource):
             return {'message': 'An error occurred while saving the hotel'}, 500
         return hotel.json()
         
-
+    @jwt_required()
     def put(self,hotel_id):
         dados = Hotel.atributo.parse_args()
         hotel_encontrado = HotelModel.find_hotel(hotel_id)
@@ -49,7 +50,7 @@ class Hotel(Resource):
         except:
             return {'message': 'An error occurred while saving the hotel'}, 500
         return hotel.json(), 201 # create a new hotel_id
-
+    @jwt_required()
     def delete(self,hotel_id):
         #global hoteis # dizendo que a variavel hoteis já  existe para eu poder fazer referencia novamente  
         hotel = HotelModel.find_hotel(hotel_id)
