@@ -26,6 +26,13 @@ class SiteModel(banco.Model):
         if site:
             return site
         return None
+
+    @classmethod   #não precisa passar parametro apenas retorna
+    def find_by_id(cls, site_id):
+        site = cls.query.filter_by(site_id = site_id).first() #quando escreve cls e como tivesse acesando a class UrlModel
+        if site:
+            return site
+        return None
     
     def save_site(self):
         banco.session.add(self) #adicionar os argumentos no banco e salva
